@@ -20,7 +20,7 @@ async function startServer() {
     server.logger.info(
       `Access your frontend on http://localhost:${config.get('port')}`
     )
-//    await getSubscriptionId()
+    // await getSubscriptionId()
 
     const fileInfo = await fetchFileInfo()
     sharePointFile = sharePointFileinfo(fileInfo)
