@@ -124,7 +124,7 @@ const config = convict({
     doc: 'The azure tenant ID',
     format: String,
     required: true,
-    default: '',
+    default: null,
     env: 'AZ_TENANT_ID',
     sensitive: true
   },
@@ -132,7 +132,7 @@ const config = convict({
     doc: 'The azure client ID',
     format: String,
     required: true,
-    default: '',
+    default: null,
     env: 'AZ_CLIENT_ID',
     sensitive: true
   },
@@ -140,7 +140,7 @@ const config = convict({
     doc: 'The azure client secret',
     format: String,
     required: true,
-    default: '',
+    default: null,
     env: 'AZ_CLIENT_SECRET',
     sensitive: true
   },
