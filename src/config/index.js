@@ -8,10 +8,9 @@ const fourHoursMs = 14400000
 const oneWeekMs = 604800000
 
 const isProduction = process.env.NODE_ENV === 'production'
+const isDev = process.env.NODE_ENV === 'development'
 const isTest = process.env.NODE_ENV === 'test'
-const isDevelopment = process.env.NODE_ENV === 'development'
-
-export const config = convict({
+const config = convict({
   serviceVersion: {
     doc: 'The service version, this variable is injected into your docker container in CDP environments',
     format: String,
@@ -28,7 +27,7 @@ export const config = convict({
   port: {
     doc: 'The port to bind.',
     format: 'port',
-    default: 3000,
+    default: 3001,
     env: 'PORT'
   },
   staticCacheTimeout: {
@@ -38,9 +37,9 @@ export const config = convict({
     env: 'STATIC_CACHE_TIMEOUT'
   },
   serviceName: {
-    doc: 'Applications Service Name',
+    doc: 'Api Service Name',
     format: String,
-    default: 'ras-automation-frontend'
+    default: 'ras-automation-backend'
   },
   root: {
     doc: 'Project root',
@@ -61,7 +60,7 @@ export const config = convict({
   isDevelopment: {
     doc: 'If this application running in the development environment',
     format: Boolean,
-    default: isDevelopment
+    default: isDev
   },
   isTest: {
     doc: 'If this application running in the test environment',
@@ -72,7 +71,7 @@ export const config = convict({
     enabled: {
       doc: 'Is logging enabled',
       format: Boolean,
-      default: process.env.NODE_ENV !== 'test',
+      default: !isTest,
       env: 'LOG_ENABLED'
     },
     level: {
@@ -92,16 +91,119 @@ export const config = convict({
       format: Array,
       default: isProduction
         ? ['req.headers.authorization', 'req.headers.cookie', 'res.headers']
-        : []
+        : ['req', 'res', 'responseTime']
     }
   },
-  httpProxy: /** @type {SchemaObj<string | null>} */ ({
+  mongoUri: {
+    doc: 'URI for mongodb',
+    format: String,
+    default: 'mongodb://127.0.0.1:27017/',
+    env: 'MONGO_URI'
+  },
+  mongoDatabase: {
+    doc: 'database for mongodb',
+    format: String,
+    default: 'ras-automation-backend',
+    env: 'MONGO_DATABASE'
+  },
+  httpProxy: {
     doc: 'HTTP Proxy',
     format: String,
     nullable: true,
     default: null,
-    env: 'HTTP_PROXY'
-  }),
+    env: 'CDP_HTTP_PROXY'
+  },
+  httpsProxy: {
+    doc: 'HTTPS Proxy',
+    format: String,
+    nullable: true,
+    default: null,
+    env: 'CDP_HTTPS_PROXY'
+  },
+  azTenantId: {
+    doc: 'The azure tenant ID',
+    format: String,
+    required: true,
+    default: 'test',
+    env: 'AZ_TENANT_ID',
+    sensitive: true
+  },
+  azClientId: {
+    doc: 'The azure client ID',
+    format: String,
+    required: true,
+    default: 'test',
+    env: 'AZ_CLIENT_ID',
+    sensitive: true
+  },
+  azClientSecret: {
+    doc: 'The azure client secret',
+    format: String,
+    required: true,
+    default: 'test',
+    env: 'AZ_CLIENT_SECRET',
+    sensitive: true
+  },
+  awsRegion: {
+    doc: 'AWS region',
+    format: String,
+    default: '',
+    env: 'AWS_REGION'
+  },
+  awsAccessKeyId: {
+    doc: 'AWS Access KeyId',
+    format: String,
+    default: '',
+    env: 'AWS_ACCESS_KEY_ID'
+  },
+  awsSecretAccessKey: {
+    doc: 'AWS Secret Access Key',
+    format: String,
+    default: '',
+    env: 'AWS_SECRET_ACCESS_KEY'
+  },
+  awsGatewayEndPoint: {
+    doc: 'AWS Gateway EndPoint',
+    format: String,
+    default: '',
+    env: 'AWS_GATEWAY_ENDPOINT'
+  },
+  awsTokenURL: {
+    doc: 'AWS Token EndPoint',
+    format: String,
+    default: '',
+    env: 'AWS_TOKEN_ENDPOINT'
+  },
+  sharePointSiteId: {
+    doc: 'Sharepoint Site Id',
+    format: String,
+    default: '',
+    env: 'SP_SITE_ID'
+  },
+  sharePointDriveId: {
+    doc: 'Sharepoint Drive Id',
+    format: String,
+    default: '',
+    env: 'SP_DRIVE_ID'
+  },
+  emailTemplateId: {
+    doc: 'Email Template Id',
+    format: String,
+    default: '',
+    env: 'GOV_EMAIL_TEMPLATE_ID'
+  },
+  emailAPIKey: {
+    doc: 'Email API Key',
+    format: String,
+    default: '',
+    env: 'GOV_EMAIL_API_KEY'
+  },
+  emailServiceEndPoint: {
+    doc: 'Email Service End Point',
+    format: String,
+    default: '',
+    env: 'GOV_EMAIL_SERVICE_END_POINT'
+  },
   isSecureContextEnabled: {
     doc: 'Enable Secure Context',
     format: Boolean,
@@ -200,12 +302,12 @@ export const config = convict({
     watch: {
       doc: 'Reload templates when they are changed.',
       format: Boolean,
-      default: isDevelopment
+      default: isDev
     },
     noCache: {
       doc: 'Use a cache and recompile templates each time',
       format: Boolean,
-      default: isDevelopment
+      default: isDev
     }
   },
   tracing: {
@@ -220,7 +322,4 @@ export const config = convict({
 
 config.validate({ allowed: 'strict' })
 
-/**
- * @import { Schema, SchemaObj } from 'convict'
- * @import { RedisConfig } from '~/src/server/common/helpers/redis-client.js'
- */
+export { config }
